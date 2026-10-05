@@ -7,6 +7,10 @@
     artifacts\app and the editor to artifacts\app\Editor. Neither needs .NET
     or anything else installed.
 
+.PARAMETER Version
+    The version to stamp into the programs, such as 1.2.0. Leave it out for a
+    development build, which gets the version in Directory.Build.props.
+
 .PARAMETER SkipTests
     Publish without running the tests first.
 
@@ -15,6 +19,8 @@
 #>
 [CmdletBinding()]
 param(
+    [version]$Version,
+
     [switch]$SkipTests,
 
     [switch]$Run
@@ -51,10 +57,15 @@ if ($running) {
 # path and the publish fails, so make it resolvable.
 $env:PATH = "$env:PATH;$(Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer')"
 
+$versionArguments = @()
+if ($Version) {
+    $versionArguments = @("-p:Version=$Version")
+}
+
 Write-Host 'Publishing WinCapture (Native AOT)...'
-Invoke-Native dotnet @(
+Invoke-Native dotnet (@(
     'publish', (Join-Path $RepoRoot 'src\WinCapture.App\WinCapture.App.csproj'),
-    '-c', 'Release', '-o', $Output, '--nologo', '-v:q')
+    '-c', 'Release', '-o', $Output, '--nologo', '-v:q') + $versionArguments)
 
 # The editor goes into a folder of its own: as a WinUI program it brings .NET
 # and the Windows App SDK with it, a few hundred files.
@@ -65,9 +76,9 @@ if (Test-Path $editorOutput) {
     Remove-Item $editorOutput -Recurse -Force
 }
 
-Invoke-Native dotnet @(
+Invoke-Native dotnet (@(
     'publish', (Join-Path $RepoRoot 'src\WinCapture.Editor\WinCapture.Editor.csproj'),
-    '-c', 'Release', '-p:Platform=x64', '-o', $editorOutput, '--nologo', '-v:q')
+    '-c', 'Release', '-p:Platform=x64', '-o', $editorOutput, '--nologo', '-v:q') + $versionArguments)
 
 $exe = Join-Path $Output 'WinCapture.exe'
 Write-Host "Built: $exe"

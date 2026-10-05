@@ -8,6 +8,18 @@ WinCapture is a screenshot tool for Windows 11 that takes over the Print Screen 
 
 It runs in the notification area as one small native program; the editor for drawing on a screenshot is a WinUI 3 program that is only started when you use it. This is an early version: capturing and drawing on screenshots work, while snapping to screen elements is not built yet.
 
+## Install
+
+You need 64-bit Windows 11.
+
+Download `WinCapture-<version>-x64.zip` from the [releases page](https://github.com/rathlinus/WinCapture/releases), unpack it to a folder where it can stay, and start `WinCapture.exe`. Nothing else has to be installed.
+
+The programs are not signed, so Windows SmartScreen may stop the first start with "Windows protected your PC". Choose **More info**, then **Run anyway**.
+
+WinCapture does not start with Windows by itself yet. To have it do so, press `Win+R`, enter `shell:startup` and put a shortcut to `WinCapture.exe` into the folder that opens.
+
+To remove it, exit WinCapture from its tray menu, run `WinCapture.exe --restore-printscreen` to give Print Screen back to Snipping Tool, and delete the folder.
+
 ## Keys
 
 | Key | Action |
@@ -115,7 +127,7 @@ scripts\build.ps1 -Run
 
 This runs the tests, writes `artifacts\app\WinCapture.exe` with the editor in `artifacts\app\Editor`, and starts WinCapture. The editor brings .NET and the Windows App SDK with it, which makes its folder about 260 MB.
 
-`scripts\generate-assets.ps1` draws the logo. Its output is checked in; run it only to change the logo.
+`scripts\generate-assets.ps1` draws the logo. Its output is checked in; run it only to change the logo. [docs/releasing.md](docs/releasing.md) covers publishing a version.
 
 ## When a capture looks wrong
 

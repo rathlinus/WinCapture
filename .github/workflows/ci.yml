@@ -26,16 +26,16 @@ jobs:
       - name: Test
         run: dotnet test tests/WinCapture.Core.Tests
 
-      # The same script a developer runs: the capture program with Native AOT and
-      # the editor next to it. The tests already ran in the step before.
+      # The same script the release workflow runs, so a broken release shows up here
+      # and not after a tag is pushed. The version is a placeholder.
       # Windows PowerShell, because that is what the scripts are written for and tested with.
-      - name: Build
+      - name: Build the release file
         shell: powershell
-        run: scripts\build.ps1 -SkipTests
+        run: scripts\release.ps1 -Version 0.0.1
 
-      # Enough to try out what a change produced: unzip and start WinCapture.exe.
+      # Enough to try out what a change produced: unpack and start WinCapture.exe.
       - uses: actions/upload-artifact@v7
         with:
           name: WinCapture
-          path: artifacts/app
+          path: artifacts/release/*.zip
           if-no-files-found: error

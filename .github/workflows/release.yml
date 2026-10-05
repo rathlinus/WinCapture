@@ -1,0 +1,39 @@
+name: Release
+
+# Pushing a tag such as v1.2.0 builds and publishes that version.
+# docs/releasing.md describes the process.
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Test
+        run: dotnet test tests/WinCapture.Core.Tests
+
+      # Windows PowerShell, because that is what the scripts are written for and tested with.
+      - name: Build
+        shell: powershell
+        run: scripts\release.ps1 -Version ($env:GITHUB_REF_NAME.TrimStart('v'))
+
+      - name: Publish the release
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          $files = (Get-ChildItem artifacts\release -File).FullName
+          $notes = "Download ``WinCapture-$version-x64.zip``, unpack it and start ``WinCapture.exe``. The programs are not signed, so Windows SmartScreen may warn about them; choose **More info**, then **Run anyway**. The README has the details."
+          gh release create $env:GITHUB_REF_NAME $files --title "WinCapture $version" --notes $notes --generate-notes --verify-tag
+          if ($LASTEXITCODE -ne 0) { throw 'Creating the release failed.' }
