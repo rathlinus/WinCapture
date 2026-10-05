@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="WinCapture.Editor.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    Title="WinCapture">
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid x:Name="Root" PreviewKeyDown="OnPreviewKeyDown">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TitleBar x:Name="AppTitleBar" Title="WinCapture">
+            <TitleBar.IconSource>
+                <ImageIconSource ImageSource="Assets/AppIcon.ico" />
+            </TitleBar.IconSource>
+        </TitleBar>
+
+        <!-- The toolbar: what to draw with on the left, what to do with the result on the right. -->
+        <Grid Grid.Row="1" Padding="12,0,12,8" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <ToggleButton
+                    x:Name="PenButton"
+                    AutomationProperties.Name="Pen"
+                    Click="OnToolClick"
+                    Style="{StaticResource ToolButtonStyle}"
+                    Tag="Pen"
+                    ToolTipService.ToolTip="Pen (P)">
+                    <FontIcon FontSize="16" Glyph="&#xE70F;" />
+                </ToggleButton>
+                <ToggleButton
+                    x:Name="HighlighterButton"
+                    AutomationProperties.Name="Highlighter"
+                    Click="OnToolClick"
+                    Style="{StaticResource ToolButtonStyle}"
+                    Tag="Highlighter"
+                    ToolTipService.ToolTip="Highlighter (H)">
+                    <FontIcon FontSize="16" Glyph="&#xE7E6;" />
+                </ToggleButton>
+                <!-- The shape tools show the shape they draw. -->
+                <ToggleButton
+                    x:Name="LineButton"
+                    AutomationProperties.Name="Line"
+                    Click="OnToolClick"
+                    Style="{StaticResource ToolButtonStyle}"
+                    Tag="Line"
+                    ToolTipService.ToolTip="Line (L)">
+                    <PathIcon Data="M2.2,12.7 L12.7,2.2 L13.8,3.3 L3.3,13.8 Z" />
+                </ToggleButton>
+                <ToggleButton
+                    x:Name="ArrowButton"
+                    AutomationProperties.Name="Arrow"
+                    Click="OnToolClick"
+                    Style="{StaticResource ToolButtonStyle}"
+                    Tag="Arrow"
+                    ToolTipService.ToolTip="Arrow (A)">
+                    <PathIcon Data="M14,2 L14,8.2 L11.9,6.1 L3.9,14.1 L1.9,12.1 L9.9,4.1 L7.8,2 Z" />
+                </ToggleButton>
+                <ToggleButton
+                    x:Name="RectangleButton"
+                    AutomationProperties.Name="Rectangle"
+                    Click="OnToolClick"
+                    Style="{StaticResource ToolButtonStyle}"
+                    Tag="Rectangle"
+                    ToolTipService.ToolTip="Rectangle (R)">
+                    <PathIcon Data="F0 M2,3 H14 V13 H2 Z M3.5,4.5 V11.5 H12.5 V4.5 Z" />
+                </ToggleButton>
+                <ToggleButton
+                    x:Name="EllipseButton"
+                    AutomationProperties.Name="Ellipse"
+                    Click="OnToolClick"
+                    Style="{StaticResource ToolButtonStyle}"
+                    Tag="Ellipse"
+                    ToolTipService.ToolTip="Ellipse (E)">
+                    <PathIcon Data="F0 M8,2.5 A6.5,5.5 0 1 1 7.99,2.5 Z M8,4 A5,4 0 1 0 8.01,4 Z" />
+                </ToggleButton>
+
+                <AppBarSeparator />
+
+                <DropDownButton Height="36" AutomationProperties.Name="Colour" ToolTipService.ToolTip="Colour">
+                    <Ellipse
+                        x:Name="ColorSwatch"
+                        Width="16"
+                        Height="16"
+                        Stroke="{ThemeResource ControlStrokeColorDefaultBrush}"
+                        StrokeThickness="1" />
+                    <DropDownButton.Flyout>
+                        <Flyout x:Name="ColorFlyout" Placement="Bottom">
+                            <StackPanel x:Name="ColorList" Orientation="Horizontal" Spacing="8" />
+                        </Flyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+
+                <DropDownButton Height="36" AutomationProperties.Name="Thickness" ToolTipService.ToolTip="Thickness">
+                    <TextBlock x:Name="WidthText" MinWidth="36" TextAlignment="Center" />
+                    <DropDownButton.Flyout>
+                        <Flyout x:Name="WidthFlyout" Placement="Bottom">
+                            <Slider
+                                x:Name="WidthSlider"
+                                Width="220"
+                                Header="Thickness"
+                                Maximum="30"
+                                Minimum="1"
+                                ValueChanged="OnWidthChanged" />
+                        </Flyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+
+                <AppBarSeparator />
+
+                <Button
+                    x:Name="UndoButton"
+                    AutomationProperties.Name="Undo"
+                    Click="OnUndoClick"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTipService.ToolTip="Undo (Ctrl+Z)">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Z" Modifiers="Control" />
+                    </Button.KeyboardAccelerators>
+                    <FontIcon FontSize="16" Glyph="&#xE7A7;" />
+                </Button>
+                <Button
+                    x:Name="RedoButton"
+                    AutomationProperties.Name="Redo"
+                    Click="OnRedoClick"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTipService.ToolTip="Redo (Ctrl+Y)">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Y" Modifiers="Control" />
+                        <KeyboardAccelerator Key="Z" Modifiers="Control,Shift" />
+                    </Button.KeyboardAccelerators>
+                    <FontIcon FontSize="16" Glyph="&#xE7A6;" />
+                </Button>
+            </StackPanel>
+
+            <TextBlock
+                x:Name="StatusText"
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                TextTrimming="CharacterEllipsis"
+                TextWrapping="NoWrap" />
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                <Button Height="36" Click="OnCopyClick" ToolTipService.ToolTip="Copy (Ctrl+C)">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="C" Modifiers="Control" />
+                    </Button.KeyboardAccelerators>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon FontSize="14" Glyph="&#xE8C8;" />
+                        <TextBlock Text="Copy" />
+                    </StackPanel>
+                </Button>
+                <Button Height="36" Click="OnSaveClick" ToolTipService.ToolTip="Save (Ctrl+S)">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="S" Modifiers="Control" />
+                    </Button.KeyboardAccelerators>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon FontSize="14" Glyph="&#xE74E;" />
+                        <TextBlock Text="Save" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    x:Name="DoneButton"
+                    Height="36"
+                    MinWidth="72"
+                    Click="OnDoneClick"
+                    Content="Done"
+                    Style="{StaticResource AccentButtonStyle}"
+                    ToolTipService.ToolTip="Copy, save and close (Enter)" />
+            </StackPanel>
+        </Grid>
+
+        <!-- The screenshot. Drawn with Win2D, the same way it is drawn into the saved image. -->
+        <Border
+            Grid.Row="2"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="0,1,0,0">
+            <canvas:CanvasControl
+                x:Name="Canvas"
+                ClearColor="Transparent"
+                CreateResources="OnCreateResources"
+                Draw="OnDraw"
+                PointerCaptureLost="OnPointerCaptureLost"
+                PointerMoved="OnPointerMoved"
+                PointerPressed="OnPointerPressed"
+                PointerReleased="OnPointerReleased" />
+        </Border>
+    </Grid>
+</Window>

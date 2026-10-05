@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WinCapture.App/WinCapture.App.csproj" />
+    <Project Path="src/WinCapture.Core/WinCapture.Core.csproj" />
+    <Project Path="src/WinCapture.Editor/WinCapture.Editor.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WinCapture.Core.Tests/WinCapture.Core.Tests.csproj" />
+  </Folder>
+</Solution>

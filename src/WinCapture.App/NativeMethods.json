@@ -1,0 +1,15 @@
+{
+  "$schema": "https://aka.ms/CsWin32.schema.json",
+  "allowMarshaling": false,
+  "useSafeHandles": false,
+  "public": false,
+  "comInterop": {
+    "preserveSigMethods": [
+      "IDXGIFactory1.EnumAdapters1",
+      "IDXGIAdapter.EnumOutputs",
+      "IDXGIOutput1.DuplicateOutput",
+      "IDXGIOutputDuplication.AcquireNextFrame",
+      "ID3D11DeviceContext.Map"
+    ]
+  }
+}

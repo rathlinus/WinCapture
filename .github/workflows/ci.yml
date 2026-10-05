@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# A newer push to the same branch makes the older run pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Test
+        run: dotnet test tests/WinCapture.Core.Tests
+
+      # The same script a developer runs: the capture program with Native AOT and
+      # the editor next to it. The tests already ran in the step before.
+      # Windows PowerShell, because that is what the scripts are written for and tested with.
+      - name: Build
+        shell: powershell
+        run: scripts\build.ps1 -SkipTests
+
+      # Enough to try out what a change produced: unzip and start WinCapture.exe.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: WinCapture
+          path: artifacts/app
+          if-no-files-found: error

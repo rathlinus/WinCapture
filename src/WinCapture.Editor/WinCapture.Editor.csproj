@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The window for drawing on a screenshot, built with WinUI 3. It is a program
+    of its own that the capture process starts when it is needed, so that the
+    capture process itself does not have to load a UI framework.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
+    <RootNamespace>WinCapture.Editor</RootNamespace>
+    <AssemblyName>WinCapture.Editor</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\WinCapture.App\Assets\AppIcon.ico</ApplicationIcon>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <WinUISDKReferences>false</WinUISDKReferences>
+    <!-- Not installed as a package: it runs from the folder next to WinCapture.exe. -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <!-- Ship .NET and the Windows App SDK in that folder, so it runs with no prerequisites. -->
+    <SelfContained>true</SelfContained>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- Precompiled code: the editor is started by a click and should not spend that moment in the JIT. -->
+    <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">true</PublishReadyToRun>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
+    <Content Include="..\WinCapture.App\Assets\AppIcon.ico" Link="Assets\AppIcon.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
+  </ItemGroup>
+
+  <!--
+    Parts of the Windows App SDK the editor has no use for. Leaving them out
+    keeps their libraries, among them two machine learning runtimes, out of the
+    editor's folder.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK.AI" Version="2.5.5" ExcludeAssets="all" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.ML" Version="2.1.94" ExcludeAssets="all" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Search" Version="2.5.5" ExcludeAssets="all" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Widgets" Version="2.0.5" ExcludeAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WinCapture.Core\WinCapture.Core.csproj" />
+  </ItemGroup>
+
+  <!--
+    "dotnet publish" leaves out the compiled XAML and its index when the app is
+    not a package. Without them the app stops at start, so copy them over from
+    the build output.
+  -->
+  <Target Name="PublishCompiledXaml" AfterTargets="Publish">
+    <ItemGroup>
+      <CompiledXaml Include="$(OutDir)*.xbf;$(OutDir)$(AssemblyName).pri" />
+    </ItemGroup>
+    <Copy SourceFiles="@(CompiledXaml)" DestinationFolder="$(PublishDir)" />
+  </Target>
+
+</Project>

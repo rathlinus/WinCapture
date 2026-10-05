@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The resident capture process: tray icon, hotkeys, capture and the selection
+    overlay. Published with Native AOT and drawn with plain Win32 and Direct2D,
+    so the overlay is up within a frame or two of the key press. No UI framework
+    is loaded on that path.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- The Windows version in the name brings the types for notifications. -->
+    <TargetFramework>net10.0-windows10.0.22000.0</TargetFramework>
+    <RootNamespace>WinCapture.App</RootNamespace>
+    <AssemblyName>WinCapture</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishAot>true</PublishAot>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <DebuggerSupport Condition="'$(Configuration)' != 'Debug'">false</DebuggerSupport>
+  </PropertyGroup>
+
+  <!-- Shown by Windows next to the app's notifications. -->
+  <ItemGroup>
+    <Content Include="Assets\AppIcon.png" Link="AppIcon.png" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.346" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WinCapture.Core\WinCapture.Core.csproj" />
+  </ItemGroup>
+
+</Project>
