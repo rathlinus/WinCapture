@@ -19,6 +19,10 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # Inno Setup compiles the setup program.
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
       - name: Test
         run: dotnet test tests/WinCapture.Core.Tests
 
@@ -34,6 +38,6 @@ jobs:
         run: |
           $version = $env:GITHUB_REF_NAME.TrimStart('v')
           $files = (Get-ChildItem artifacts\release -File).FullName
-          $notes = "Download ``WinCapture-$version-x64.zip``, unpack it and start ``WinCapture.exe``. The programs are not signed, so Windows SmartScreen may warn about them; choose **More info**, then **Run anyway**. The README has the details."
+          $notes = "Download ``WinCapture-$version-Setup.exe`` and run it. It is not signed, so Windows SmartScreen may warn about it; choose **More info**, then **Run anyway**. The README has the details and the zip for running without installing."
           gh release create $env:GITHUB_REF_NAME $files --title "WinCapture $version" --notes $notes --generate-notes --verify-tag
           if ($LASTEXITCODE -ne 0) { throw 'Creating the release failed.' }

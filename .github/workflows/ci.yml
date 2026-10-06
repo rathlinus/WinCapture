@@ -23,19 +23,24 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # Inno Setup compiles the setup program.
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
       - name: Test
         run: dotnet test tests/WinCapture.Core.Tests
 
       # The same script the release workflow runs, so a broken release shows up here
       # and not after a tag is pushed. The version is a placeholder.
       # Windows PowerShell, because that is what the scripts are written for and tested with.
-      - name: Build the release file
+      - name: Build the release files
         shell: powershell
         run: scripts\release.ps1 -Version 0.0.1
 
-      # Enough to try out what a change produced: unpack and start WinCapture.exe.
+      # Enough to try out what a change produced: run the setup program, or unpack
+      # the zip and start WinCapture.exe.
       - uses: actions/upload-artifact@v7
         with:
           name: WinCapture
-          path: artifacts/release/*.zip
+          path: artifacts/release/
           if-no-files-found: error

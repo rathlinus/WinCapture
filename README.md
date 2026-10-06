@@ -12,13 +12,13 @@ It runs in the notification area as one small native program; the editor for dra
 
 You need 64-bit Windows 11.
 
-Download `WinCapture-<version>-x64.zip` from the [releases page](https://github.com/rathlinus/WinCapture/releases), unpack it to a folder where it can stay, and start `WinCapture.exe`. Nothing else has to be installed.
+Download `WinCapture-<version>-Setup.exe` from the [releases page](https://github.com/rathlinus/WinCapture/releases) and run it. It installs for your user only, without administrator rights, and by default starts WinCapture when you sign in.
 
-The programs are not signed, so Windows SmartScreen may stop the first start with "Windows protected your PC". Choose **More info**, then **Run anyway**.
+Setup is not signed, so Windows SmartScreen may stop it with "Windows protected your PC". Choose **More info**, then **Run anyway**.
 
-WinCapture does not start with Windows by itself yet. To have it do so, press `Win+R`, enter `shell:startup` and put a shortcut to `WinCapture.exe` into the folder that opens.
+To uninstall, open Settings, go to Apps, then Installed apps, and remove WinCapture. That also gives Print Screen back to Snipping Tool.
 
-To remove it, exit WinCapture from its tray menu, run `WinCapture.exe --restore-printscreen` to give Print Screen back to Snipping Tool, and delete the folder.
+The release also has `WinCapture-<version>-x64.zip` for running without installing: unpack it and start `WinCapture.exe`. To remove that copy, exit WinCapture from its tray menu, run `WinCapture.exe --restore-printscreen` and delete the folder. For an unattended install, run the setup program with `/VERYSILENT`.
 
 ## Keys
 
